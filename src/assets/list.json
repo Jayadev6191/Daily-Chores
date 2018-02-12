@@ -1,0 +1,17 @@
+{
+	"list": [
+		{
+			"id": 0,
+			"title": "Buy Some Beer",
+			"description": "I'll be in your neighborhood doing errands this weekend. Do you want to grab brunch?",
+			"date": "12-31-2017"
+		},
+		{
+			"id": 1,
+			"title": "Kick Some Ball",
+			"description": "Wish I could come, but I'm out of town this weekend.",
+			"date": "01-15-2018"
+		}
+    ],
+    "finished_items": []
+}
