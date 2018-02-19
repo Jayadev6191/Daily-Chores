@@ -1,7 +1,10 @@
 import React from 'react';
 import { List, ListItem } from 'material-ui/List';
 import { Paper,
-         Checkbox} from 'material-ui';
+         Checkbox, FloatingActionButton} from 'material-ui';
+import IconButton from 'material-ui/IconButton';
+import ContentAdd from 'material-ui/svg-icons/content/add';
+import Styles from '../assets/styles/styles.js';
 import map from 'lodash/map';
 
 /* 
@@ -11,16 +14,7 @@ import map from 'lodash/map';
  import ContentClear from 'material-ui/svg-icons/content/clear'; 
 */
 
-const listStyle = {
-  padding: '20px 20px',
-  margin:'15px 0px'
-};
-
-const doneListStyle = {
-  padding: '20px 20px',
-  margin:'15px 0px',
-  textDecoration: 'line-through'
-};
+console.log(Styles);
 
 const listItemStyle = {
   margin: '15px 0px'
@@ -30,41 +24,49 @@ const checkboxStyles = {
   marginTop:'20px'
 };
 
+const addButtonStyle= {
+  position:'absolute',
+  marginTop:'30px',
+  right:'40px',
+  fontSize:'10px'
+};
+
+const addIcon = (
+  <IconButton iconClassName="muidocs-icon-custom-github" />
+);
+
+
 class ToDo extends React.Component {
-  markAsDone = (i, status, event) => {
-    console.log(i);
-    console.log(status);
-    this.props.updateDone(i,status);
-    // console.log(event);
-    // const finished_item = this.state.finished_list;
-    // database.ref('/finished_items').push(this.state.todo_list[i]);
-    // finished_item.push(this.state.todo_list[i])
-    // this.setState({finished_list: finished_item})
+  update = (i, status) => {
+    this.props.updateItem(i,status);
   }
   render = () => {
     const {list} = this.props;
 
     return (
       <Paper>
-        <List className="list" style={listStyle}>
+        <List className="list" style={Styles.listStyle}>
         {
           map(list, (item, key) => {
             return (
               <Paper key={key}>
               <ListItem
-                style={item.done ? doneListStyle: listItemStyle}
+                style={item.done ? Styles.doneListStyle: listItemStyle}
                 leftCheckbox={
                   <Checkbox style={checkboxStyles}
                             checked={item.done ? true : false}
-                            onClick={this.markAsDone.bind(this, key, item.done)}/>
+                            onClick={this.update.bind(this, key, item.done)}/>
                 }
                 primaryText={
-                  <span>{item.title}</span>
+                  <span className="primary-text">{item.title}</span>
                 }
                 secondaryText={
                   <p>
                     {item.short_desc}
                   </p>
+                }
+                rightIcon={
+                  addIcon
                 }
                 secondaryTextLines={2}
               />
@@ -73,6 +75,7 @@ class ToDo extends React.Component {
           })
         }
         </List>
+        
       </Paper>
     )
   }

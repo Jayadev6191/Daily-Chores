@@ -3,11 +3,13 @@ import { render } from 'react-dom';
 import { AppBar, FloatingActionButton, Paper, FlatButton, TextField} from 'material-ui';
 import Dialog from 'material-ui/Dialog';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
-import ToDo from './ToDo';
+import ToDo from './components/ToDo';
 import ContentAdd from 'material-ui/svg-icons/content/add';
+import { colors } from 'material-ui/styles';
 import {database} from './config';
 require('./assets/styles/index.scss');
 
+console.log(colors);
 const styles = {
   fontFamily: 'sans-serif',
   textAlign: 'center',
@@ -43,16 +45,12 @@ class App extends React.Component {
     });
   }
   updateChore = (key, status) => {
-    const { todo_list } = this.state;
     var choreRef = database.ref('/list').child(key);
     choreRef.update({done:!status});
-    todo_list[key] = choreRef;
-    console.log(todo_list);
-    this.setState({todo_list});
   }
   componentDidMount = () => {
-    database.ref('/list').once('value').then((list_item)=> {
-        this.setState({ todo_list: list_item.val()});
+    database.ref('/list').on('value', (snap)=>{
+      this.setState({ todo_list: snap.val()});
     });
   }
   render() {
@@ -73,7 +71,7 @@ class App extends React.Component {
       />
     ];
 
-    const icon = (
+    const addIcon = (
       <FloatingActionButton tooltip="Ligature" mini={true} secondary={true} style={addButtonStyle} onClick={this.addItem}>
         <ContentAdd />
       </FloatingActionButton >
@@ -85,7 +83,10 @@ class App extends React.Component {
           <Paper>
             <AppBar
               title="Daily Chores"
-              iconElementRight={icon}
+              iconElementRight={addIcon}
+              style={{
+                backgroundColor:colors.teal500
+              }}
             />
             <Dialog
               title="Add Chore"
@@ -105,7 +106,7 @@ class App extends React.Component {
                 onChange={(evt)=>{ this.setState({short_desc:evt.target.value})}}
               />
             </Dialog>
-            <ToDo className="todo" list={todo_list} updateDone={(key,status)=>{this.updateChore(key,status)}} />
+            <ToDo className="todo" list={todo_list} updateItem={(key,status)=>{this.updateChore(key,status)}} />
           </Paper>
         </MuiThemeProvider>
       </div>
