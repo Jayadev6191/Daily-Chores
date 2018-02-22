@@ -1,13 +1,13 @@
 import React from 'react';
 import { render } from 'react-dom';
-import { AppBar, FloatingActionButton, Paper, FlatButton, TextField} from 'material-ui';
+import { AppBar, FloatingActionButton, FlatButton, TextField} from 'material-ui';
 import Dialog from 'material-ui/Dialog';
 import MuiThemeProvider from 'material-ui/styles/MuiThemeProvider';
 import ToDo from './components/ToDo';
 import ContentAdd from 'material-ui/svg-icons/content/add';
 import { colors } from 'material-ui/styles';
 import {database} from './config';
-require('./assets/styles/index.scss');
+require('./assets/css/styles');
 
 console.log(colors);
 const styles = {
@@ -24,8 +24,8 @@ const addButtonStyle= {
 
 
 class App extends React.Component {
-  state = { open: false, canAdd:false, title:"", short_desc:"", todo_list: []};
-
+  state = { open: false, canAdd:false, title:"", short_desc:"", todo_list: {}};
+  
   addItem = () => {
     this.setState({open: true})
   }
@@ -34,19 +34,29 @@ class App extends React.Component {
   }
   addChore = () => {
     const { title, short_desc, todo_list } = this.state;
+    var chore_list;
+    if(todo_list === null) {
+      chore_list = {}
+    }else {
+      chore_list = todo_list;
+    }
     // Add Chore to Firebase
     database.ref('/list').push({title, short_desc, done: false});
     // Listen to updates on '/list'
     database.ref('/list').on('child_added',list_item => {
-      todo_list[list_item.key] = list_item.val()
-      this.setState({todo_list},()=>{
-        this.setState({open:false});
+      chore_list[list_item.key] = list_item.val()
+      this.setState({todo_list: chore_list},()=>{
+        this.setState({open:false, title:"", short_desc:""});
       });
     });
   }
   updateChore = (key, status) => {
     var choreRef = database.ref('/list').child(key);
     choreRef.update({done:!status});
+  }
+  deleteChore = (key) => {
+    var choreRef = database.ref('/list').child(key);
+    choreRef.remove();
   }
   componentDidMount = () => {
     database.ref('/list').on('value', (snap)=>{
@@ -80,7 +90,7 @@ class App extends React.Component {
     return (
       <div className="app" style={styles}>
         <MuiThemeProvider>
-          <Paper>
+          <div>
             <AppBar
               title="Daily Chores"
               iconElementRight={addIcon}
@@ -106,8 +116,10 @@ class App extends React.Component {
                 onChange={(evt)=>{ this.setState({short_desc:evt.target.value})}}
               />
             </Dialog>
-            <ToDo className="todo" list={todo_list} updateItem={(key,status)=>{this.updateChore(key,status)}} />
-          </Paper>
+            <ToDo className="todo" list={todo_list} 
+                  updateItem = {(key,status)=>{this.updateChore(key,status)}}
+                  deleteItem = {(key)=> this.deleteChore(key)} />
+          </div>
         </MuiThemeProvider>
       </div>
     )

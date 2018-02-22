@@ -5,7 +5,12 @@ var styles = {
     doneListStyle: {
         margin: '15px 0px',
         textDecoration: 'line-through',
-        color:'red'
+    },
+    primaryText: {
+        fontSize:'20px'
+    },
+    secondaryText: {
+        fontSize:'12px'
     }
 };
 

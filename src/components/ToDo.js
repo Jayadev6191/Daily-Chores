@@ -1,50 +1,42 @@
 import React from 'react';
 import { List, ListItem } from 'material-ui/List';
-import { Paper,
-         Checkbox, FloatingActionButton} from 'material-ui';
-import IconButton from 'material-ui/IconButton';
-import ContentAdd from 'material-ui/svg-icons/content/add';
-import Styles from '../assets/styles/styles.js';
+import { Paper, Checkbox} from 'material-ui';
+import ContentAdd from 'material-ui/svg-icons/content/clear';
+import Styles from '../assets/css/styles';
+import { colors } from 'material-ui/styles';
 import map from 'lodash/map';
-
-/* 
- import IconButton from 'material-ui/IconButton';
- import MoreVertIcon from 'material-ui/svg-icons/navigation/more-vert';
- import ContentCheck from 'material-ui/svg-icons/navigation/check';
- import ContentClear from 'material-ui/svg-icons/content/clear'; 
-*/
-
-console.log(Styles);
 
 const listItemStyle = {
   margin: '15px 0px'
 };
 
 const checkboxStyles = {
-  marginTop:'20px'
+  marginTop:'20px',
+  fill: colors.teal500,
 };
 
-const addButtonStyle= {
-  position:'absolute',
-  marginTop:'30px',
-  right:'40px',
-  fontSize:'10px'
-};
-
-const addIcon = (
-  <IconButton iconClassName="muidocs-icon-custom-github" />
-);
-
+class NoData extends React.Component {
+  render() {
+    return (
+      <div>
+        <h3>No Chores available</h3>
+        <h5>Click (+) to add your new chore</h5>
+      </div>
+    )
+  }
+}
 
 class ToDo extends React.Component {
   update = (i, status) => {
     this.props.updateItem(i,status);
   }
+  deleteItem = (item) => {
+    this.props.deleteItem(item);
+  }
   render = () => {
     const {list} = this.props;
 
     return (
-      <Paper>
         <List className="list" style={Styles.listStyle}>
         {
           map(list, (item, key) => {
@@ -55,18 +47,21 @@ class ToDo extends React.Component {
                 leftCheckbox={
                   <Checkbox style={checkboxStyles}
                             checked={item.done ? true : false}
+                            iconStyle={{fill: colors.teal500}}
                             onClick={this.update.bind(this, key, item.done)}/>
                 }
                 primaryText={
-                  <span className="primary-text">{item.title}</span>
+                  <p style={Styles.primaryText}>
+                    {item.title}
+                  </p>
                 }
                 secondaryText={
-                  <p>
+                  <p style={Styles.secondaryText}>
                     {item.short_desc}
                   </p>
                 }
                 rightIcon={
-                  addIcon
+                  <ContentAdd style={checkboxStyles} onClick={() => this.deleteItem(key)}/>
                 }
                 secondaryTextLines={2}
               />
@@ -74,9 +69,8 @@ class ToDo extends React.Component {
             )
           })
         }
+        {list === null ? <NoData/> : ""}
         </List>
-        
-      </Paper>
     )
   }
 }
